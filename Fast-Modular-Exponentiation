@@ -1,0 +1,63 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+int modulo(int a, int b, int c);
+int fast_modulo(int a, int b, int c);
+
+int main()
+{
+	int a, b, c;
+	cout << "Enter a: ";
+	cin >> a;
+	cout << endl;
+	cout << "Enter b: ";
+	cin >> b;
+	cout << endl;
+	cout << "Enter c: ";
+	cin >> c;
+	cout << endl;
+
+	fast_modulo(a, b, c);
+
+	cout << "wynik" << modulo(a,b,c);
+	system("pause");
+}
+
+int fast_modulo(int a, int b, int c)
+{
+	long long res = 1;
+	long int x = a % c;
+	for (int i = 1; i <= b; i <<= 1)
+	{
+		x %= c;
+		res *= a;
+		res %= c;
+		if ((b&i) != 0)
+		{
+			res *= x;
+			res %= c;
+		}
+		cout << x << endl;
+		x *= x;
+	}
+
+	return res;
+}
+int modulo(int a, int b, int m) 
+{
+	int result = 1;
+	long int x = a % m;
+	for (int i = 1; i <= b; i <<= 1)
+	{
+		x %= m;
+		if ((b&i) != 0) 
+		{
+			result *= x;
+			result %= m;
+		}
+		x *= x;
+	}
+	return result;
+}
+
