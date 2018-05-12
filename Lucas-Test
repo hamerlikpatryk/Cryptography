@@ -1,0 +1,147 @@
+#include <iostream>
+#include <cmath>
+#include <string.h>
+
+using namespace std;
+
+struct zbior
+{
+	int czyn;
+	int krot;
+};
+struct zapis
+{
+	zbior arr[256];
+	int ile = 0;
+	void add(int x)
+	{
+		int i = 0;
+		while (i<ile)
+		{
+			if (x == arr[i].czyn)
+			{
+				arr[i].krot++;
+				break;
+			} i++;
+		}
+		if (i == ile)
+		{
+			arr[ile].czyn = x;
+			arr[ile].krot = 1;
+			ile++;
+		}
+	}
+	void czynniki()
+	{
+		cout << "(";
+		for (int i = 0; i<ile; i++)
+		{
+			cout << arr[i].czyn;
+			if (i != ile - 1) cout << ",";
+		}
+		cout << ")";
+	}
+	void krotnosci()
+	{
+		cout << "(";
+		for (int i = 0; i<ile; i++)
+		{
+			cout << arr[i].krot;
+			if (i != ile - 1) cout << ",";
+		}
+		cout << ")";
+	}
+};
+
+void fakt(int d, zapis &f);
+int szybkie_modulo(int a, int b, int m);
+
+
+int main()
+{
+	zapis f;
+	int a, d, q, flag = 0;
+	cout << "Podaj n = ";
+	cin >> a;
+	a--;
+	d = a;
+	while (d % 2 == 0)
+	{
+		d /= 2;
+		f.add(2);
+	}
+	if (d>1) fakt(d, f);
+
+	cout << "Czynniki liczby n - 1 = " << a << " to: ";
+	f.czynniki();
+
+	cout << " o krotnosciach: ";
+	f.krotnosci();
+	a++;
+
+	cout << "\nPodaj liczbe q: ";
+	cin >> q;
+	cout << q << "^" << a - 1 << " = " << szybkie_modulo(q, a - 1, a) << "(mod " << a << ")" << endl;
+	for (int i = 0; i<f.ile; i++)
+	{
+		cout << q << "^" << a - 1 << "/" << f.arr[i].czyn << " = " << szybkie_modulo(q, (a - 1) / f.arr[i].czyn, a) <<
+			"(mod " << a << ")" << endl;
+		if (szybkie_modulo(q, (a - 1) / f.arr[i].czyn, a) == 1) 
+			flag = 1;
+	}
+	if (flag == 1) 
+		cout <<endl<< "Test nie rozstrzyga czy liczba " << a << " jest pierwsza."<<endl;
+	else 
+		cout << endl<<"Liczba " << a << " jest pierwsza!"<<endl;
+
+	system("pause");
+	return 0;
+}
+
+
+
+void fakt(int d, zapis &f)
+{
+	double y;
+	double x = floor(sqrt(d));
+	if (x == sqrt(d))
+	{
+		fakt((int)x, f);
+		fakt((int)x, f);
+	}
+	else 
+	{
+		x++;
+		while (x<(d + 1) / 2)
+		{
+			y = x * x - d;
+			if (y>0 and sqrt(y) == floor((sqrt(y))))
+			{
+				int a, b;
+				a = x + sqrt(y);
+				b = x - sqrt(y);
+				fakt(a, f);
+				fakt(b, f);
+				break;
+			}
+			else x++;
+		}
+		if (x >= (d + 1) / 2) f.add(d);
+	}
+}
+int szybkie_modulo(int a, int b, int m) 
+{
+	int res = 1;
+	long int x = a % m;
+	for (int i = 1; i <= b; i <<= 1)
+	{
+		x %= m;
+		if ((b&i) != 0)
+		{
+			res *= x;
+			res %= m;
+		}
+		x *= x;
+	}
+	return res;
+}
