@@ -1,0 +1,210 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+
+struct Dzielnik
+{
+public:
+	int dziel = 0;
+	int krotn = 0;
+};
+typedef Dzielnik Dzielnik;
+
+void wyswietl_wyn(Dzielnik * arr, int l_dziel, int a);
+
+int main()
+{
+	int  a,d,y;
+	int i = 0, l_dziel = 0;
+	cout << "Wypisz a: " << endl;
+	cin >> a;
+	d = a;
+	while (d % 2 == 0) 
+	{
+		d = d / 2;
+		i++;
+	}
+	cout << a << " =2^" << i << "*" << d << endl;
+
+	int x = floor(sqrt(d));
+
+	Dzielnik arr[4];
+	if (i > 0)
+	{ 
+		arr[l_dziel].dziel = 2;
+		arr[l_dziel].krotn = i;
+		l_dziel++;
+	}
+#pragma region zwykle_D
+	if ((double)x == sqrt(d)) 
+	{
+		arr[l_dziel].dziel = x;
+		arr[l_dziel].krotn = 2;
+		l_dziel++;
+	}
+	else x++;
+	if ((double)x == sqrt(d) && arr[1].dziel == 1)
+	{
+		wyswietl_wyn(arr, l_dziel - 1, a);
+		return 0;
+	}
+	int warunek = 0;
+	while (x<(d + 1) / 2)
+	{
+		y = x * x - d;
+		if (y>0 && (double)floor(sqrt(y)) == sqrt(y)) 
+		{
+			arr[l_dziel].dziel = x + sqrt(y);
+			arr[l_dziel].krotn = 1;
+			l_dziel++;
+			wyswietl_wyn(arr, l_dziel, a);
+			break;
+		}
+		else x++;
+	}
+	int d_prim = (int)(x + sqrt(y));
+	int d_bis = (int)(x - sqrt(y));
+	x = floor(sqrt(d_prim));
+	d = d_prim;
+#pragma endregion 
+
+
+#pragma region pochodna_d
+	if ((double)x != sqrt(d)) x++;
+	else 
+	{
+		for (i = 0; i<l_dziel - 1; i++)
+		{
+			if (arr[i].dziel == x) 
+				break;
+			if (arr[i].dziel != x)
+				l_dziel++;
+			arr[i].dziel = x;
+			arr[i].krotn += 2;
+		}
+	} 
+	warunek = 0;
+	while (x<(d + 1) / 2) 
+	{
+		y = x * x - d;
+		if (y>0 && (double)floor(sqrt(y)) == sqrt(y))
+		{
+			warunek = 1;
+			break;
+		}
+		else x++;
+	}
+	if (warunek == 0)
+	{
+		for (i = 0; i<l_dziel - 1; i++)
+		{
+			if (arr[i].dziel == d)
+				break;
+		}
+		if (arr[i].dziel != d)
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+	}
+	else
+	{
+		d = x + (int)sqrt(y);
+		for (i = 0; i<l_dziel - 1; i++) 
+			if (arr[i].dziel == d)
+				break;
+		if (arr[i].dziel != d) 
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+		d = x - sqrt(y);
+		for (i = 0; i<l_dziel - 1; i++)
+		{ 
+			if (arr[i].dziel == d)
+				break;
+		}
+		if (arr[i].dziel != d)
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+	}
+	d = d_bis;
+	x = floor(sqrt(d_bis));
+#pragma endregion
+
+#pragma region druga_pochodna_d
+	if ((double)x != sqrt(d)) x++;
+	warunek = 0;
+
+	while (x<(d + 1) / 2)
+	{
+		y = x * x - d;
+		if (y > 0 && (double)floor(sqrt(y)) == sqrt(y))
+		{
+			warunek = 1;
+			break;
+		}
+		else x++;
+	}
+	if (warunek == 0) 
+	{
+		for (i = 0; i<l_dziel - 1; i++)
+		{
+			if (arr[i].dziel == d) break;
+		}
+		if (arr[i].dziel != d)
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+	}
+	else
+	{
+		d = x + (int)sqrt(y);
+		for (i = 0; i < l_dziel - 1; i++)
+		{
+			if (arr[i].dziel == d)
+				break;
+		}
+		if (arr[i].dziel != d)
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+		d = x - sqrt(y);
+		for (i = 0; i<l_dziel - 1; i++)
+		{
+			if (arr[i].dziel == d)
+				break;
+		}
+		if (arr[i].dziel != d)
+			l_dziel++;
+		arr[i + 1].dziel = d;
+		arr[i + 1].krotn += 1;
+	}
+
+#pragma endregion 
+
+
+	wyswietl_wyn(arr, l_dziel, a);
+
+	system("pause");
+}
+
+void wyswietl_wyn(Dzielnik * arr, int l_dziel, int a) 
+{
+	cout << endl;
+	cout << "Liczba a posiada dzielniki: (";
+	for (int i = 0; i<l_dziel; i++)
+	{
+		cout << arr[i].dziel;
+		if (i != l_dziel - 1) cout << ",";
+	} 
+	cout << ")" << endl;
+	cout << "O krotnosciach: (";
+	for (int i = 0; i<l_dziel; i++) 
+	{
+		cout << arr[i].krotn;
+		if (i != l_dziel - 1) cout << ",";
+	}
+	cout << ")";
+}
