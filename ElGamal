@@ -1,0 +1,217 @@
+#include <iostream>
+#include <cmath>
+#include <string.h>
+
+using namespace std;
+
+struct cont
+{
+    int fact;
+    int mult;
+};
+struct save
+{
+    cont arr[300];
+    int quant = 0;
+    void sum(int x)
+    {
+        int i=0;
+        while(i<quant)
+            {
+            if(x==arr[i].fact)
+            {
+                arr[i].mult++;
+                break;
+            }
+            i++;
+        }
+        if(i==quant)
+        {
+            arr[quant].fact=x;
+            arr[quant].mult=1;
+            quant++;
+        }
+    }
+    void write_facti()
+    {
+        cout << "{";
+        for(int i=0; i<quant; i++)
+            {
+            cout << arr[i].fact;
+            if(i!=quant-1) cout << ",";
+        }
+        cout << "}"<<endl;
+    }
+    void write_multi()
+    {
+        cout << "{";
+        for(int i=0; i<quant; i++)
+            {
+            cout << arr[i].mult;
+            if(i!=quant-1) cout << ",";
+        }
+        cout << "}"<<endl;
+    }
+};
+void fakt(int d, save &foo)
+{
+	double y;
+	double x = floor(sqrt(d));
+	if (x == sqrt(d))
+	{
+		fakt((int)x, foo);
+		fakt((int)x, foo);
+	}
+	else
+	{
+		x++;
+		while (x<(d + 1) / 2)
+		{
+			y = x * x - d;
+			if (y>0 and sqrt(y) == floor((sqrt(y))))
+			{
+				int a, b;
+				a = x + sqrt(y);
+				b = x - sqrt(y);
+				fakt(a, foo);
+				fakt(b, foo);
+				break;
+			}
+			else x++;
+		}
+		if (x >= (d + 1) / 2) foo.sum(d);
+	}
+}
+
+int fast_mod(int index, int base, int mod)
+{
+    long int temp = index;
+    int index_bin[80];
+    memset(index_bin,0,80*sizeof(int));
+    int i=0;
+    while(temp>0)
+        {
+        index_bin[79-i]=temp%2;
+        temp=temp/2;
+        i++;
+        }
+    i = 0;
+    while(index_bin[i]==0)
+        i++;
+    int first_addres=i;
+    int exp_mod[80];
+    exp_mod[79]=base%mod;
+
+    for(i=78; i>=first_addres; i--)
+        exp_mod[i]=(exp_mod[i+1]*exp_mod[i+1])%mod;
+
+    long int result=1;
+    for(i=first_addres; i<80; i++)
+        {
+        if(index_bin[i]==1)result=(result*exp_mod[i])%mod;
+        }
+    return result;
+}
+bool firstness(int range)
+{
+    int floo = floor(sqrt(range));
+    int arr[range+1];
+    for(int i = 1 ; i < range+1; i++)
+        arr[i]=1;
+    int j;
+    for(int i = 2; i<floo; i++)
+        {
+        if(arr[i]!=0)
+        {
+            j=i+i;
+            while(j<=range)
+            {
+                arr[j]=0;
+                j+=i;
+            }
+        }
+    }
+    if(arr[range]==1)
+        return true;
+    else
+        return false;
+}
+int main()
+{
+    save foo;
+    int a, d, n, q, k, t, j, c1, c2, flag=0;
+    cout << "Enter n: ";
+    cin >> n ;
+    cout << endl;
+    while(!firstness(n))
+        {
+        cout << "N is not a prime number. Enter n again: ";
+        cin >> n;
+        cout << endl;
+        }
+    a = n-1;
+    d=a;
+    while(d%2==0)
+    {
+        d/=2;
+        foo.sum(2);
+    }
+    if(d>1)
+        fakt(d,foo);
+    a++;
+    cout << "Enter r which is primitive root of n (1<r<n-1) r = ";
+    cin >> q;
+    cout << endl;
+    while (q<1 || q>(n-1))
+    {
+        cout << "R don't compatible conditions. Enter r again: ";
+        cin >> q;
+        cout << endl;
+    }
+    if((fast_mod(a,q,n)==1))
+        flag = 1;
+    cout << q << "^" << a << " = " << fast_mod(a,q,n) << "{mod " << n << "}"<<endl;
+    for(int i=0; i<foo.quant; i++)
+    {
+         cout << q << "^" << a << "/" << foo.arr[i].fact << " = " << fast_mod((a)/foo.arr[i].fact,q,n) << "{mod " << n << "}" << endl;
+         if((fast_mod((a)/foo.arr[i].fact,q,n)==1))
+            flag = 1;
+    }
+    if(flag==1)
+    {
+        cout << "Number " << q << "is not a primitive root .";
+        return 1;
+        cout << endl;
+    }
+    cout << "Enter k (1<k<n-1): ";
+    cin >> k;
+    cout << endl;
+
+    while(k<1 || k>(n-1))
+        {
+        cout << "K don't compatible conditions. Enter k again: ";
+        cin >> k;
+         cout << endl;
+        }
+    int key_a = fast_mod(k,q,n);
+
+    cout << "Enter random j = ";
+    cin >> j;
+    cout << endl;
+
+    cout << "Enter random t = ";
+    cin >> t;
+    cout << endl;
+
+    c1 = fast_mod(j,q,n);
+    c2 = (t*fast_mod(j,key_a,n))%n;
+
+    cout << "Public key: (" << n << "," << q << "," << key_a << ")"<<endl;
+    //cout << "Private key: (" << n << "," << q << "," << key_a << "," << k << ")"<<endl;
+    cout << "Cryptogram: (" << c1 << "," << c2 << ")" << endl;
+
+    int t_decrypted = (c2*fast_mod(n-1-k,c1,n))%n;
+    cout << "Decrypted code: " << t_decrypted<<endl;
+
+    return 0;
+}
