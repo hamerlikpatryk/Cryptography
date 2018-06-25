@@ -1,0 +1,799 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+class Vigenere
+{
+public:
+  string key;
+
+  Vigenere(string key)
+  {
+    for(int i = 0; i < key.size(); ++i)
+    {
+      if(key[i] >= 'A' && key[i] <= 'Z')
+        this->key += key[i];
+      else if(key[i] >= 'a' && key[i] <= 'z')
+        this->key += key[i] + 'A' - 'a';
+    }
+  }
+  string encrypt(string text)
+  {
+    string out;
+
+    for(int i = 0, j = 0; i < text.length(); ++i)
+    {
+      char c = text[i];
+
+      if(c >= 'a' && c <= 'z')
+        c += 'A' - 'a';
+      else if(c < 'A' || c > 'Z')
+        continue;
+
+      out += (c + key[j] - 2*'A') % 26 + 'A';
+      j = (j + 1) % key.length();
+    }
+    return out;
+  }
+
+  string decrypt(string text)
+  {
+    string out;
+
+    for(int i = 0, j = 0; i < text.length(); ++i)
+    {
+      char c = text[i];
+
+      if(c >= 'a' && c <= 'z')
+        c += 'A' - 'a';
+      else if(c < 'A' || c > 'Z')
+        continue;
+
+      out += (c - key[j] + 26) % 26 + 'A';
+      j = (j + 1) % key.length();
+    }
+
+    return out;
+  }
+};
+
+
+int main()
+{
+    Vigenere cipher("key"); //klucz
+    string text;
+    ifstream file;
+    file.open("txt.txt"); //wczyta z pliku txt
+    if (file.fail())
+    {
+        cerr<<"Error opening file"<<endl;
+    }
+
+    file>>text;
+    string original = text;
+    string encrypted = cipher.encrypt(original); //ni-ilość wystąpień danje liczby / ilość wszystkich liczb/ każda litera to inna liczba klucza, czyli będą trzy kolumny
+    string decrypted = cipher.decrypt(encrypted); // n0 pierwsza litera tekstu musi wyjść 0.065 ostatcznie, to nasze przesunięcie
+
+    cout << original << endl<<endl;
+    cout << "Encrypted: " << encrypted << endl<<endl;
+    cout << "Decrypted: " << decrypted << endl<<endl;
+
+    fstream plik;
+
+    plik.open("encr.txt");
+    if(plik.good() == true)
+    {
+        plik << encrypted; //zapisze do pliku zaszyfrowany rxt
+        plik.close();
+    }
+
+    string encr;
+    ifstream file1;
+    file1.open("encr.txt"); //wczyta z pliku zaszyfrowanego kodu
+    if (file.fail())
+    {
+        cerr<<"Error opening file"<<endl;
+    }
+
+    file1>>encr;
+    cout<<"Again load from encrypted file: " <<encr<<endl<<endl; ///zrobiona 1 czêœæ i czêœæ 2
+
+    //podział kluczem na kolumny co trzecią literę
+
+
+    string kol1;
+    for(int i = 0; i <= encr.length(); i++)
+        if(isalpha(encr[i]))
+           if(i%3 == 0)
+            {
+                kol1+=encr[i];
+            }
+
+    cout<<"KOLUMNA 1: "<<kol1<<endl<<endl;
+
+    fstream plik_kol1;
+    plik_kol1.open("kolumna1.txt");
+        if(plik_kol1.good() == true)
+        {
+            plik_kol1 << kol1; //zapisze do pliku kolumne 1
+            plik_kol1.close();
+        }
+
+    string kol2;
+    for(int i = 0; i <= encr.length(); i++)
+        if(isalpha(encr[i]))
+           if(i%3 == 1)
+            {
+                kol2+=encr[i];
+            }
+
+    cout<<"KOLUMNA 2: "<<kol2<<endl<<endl;
+
+    fstream plik_kol2;
+    plik_kol2.open("kolumna2.txt");
+        if(plik_kol2.good() == true)
+        {
+            plik_kol2 << kol2; //zapisze do pliku kolumne 2
+            plik_kol2.close();
+        }
+
+    string kol3;
+    for(int i = 0; i <= encr.length(); i++)
+        if(isalpha(encr[i]))
+           if(i%3 == 2)
+            {
+                kol3+=encr[i];
+            }
+
+    cout<<"KOLUMNA 3: "<<kol3<<endl<<endl;
+
+    fstream plik_kol3;
+    plik_kol3.open("kolumna3.txt");
+        if(plik_kol3.good() == true)
+        {
+            plik_kol3 << kol3; //zapisze do pliku kolumne 3
+            plik_kol3.close(); // w sumie nie wiem po co zapisuje do pliku zmienne skoro trzymam je w stringu
+        }
+
+    //liczenie wystąpień danej litery w kolumnach
+    //kolumna1
+    double letter_a = 0, letter_b = 0, letter_c = 0, letter_d = 0, letter_e = 0, letter_f = 0, letter_g = 0, letter_h = 0, letter_i = 0, letter_j = 0, letter_k = 0, letter_l = 0, letter_m = 0,
+        letter_n = 0, letter_o = 0, letter_p = 0, letter_q = 0, letter_r = 0, letter_s = 0, letter_t = 0, letter_u = 0, letter_v = 0, letter_w = 0, letter_x = 0, letter_y = 0, letter_z = 0;
+
+    for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='A')
+            letter_a++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='B')
+            letter_b++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='C')
+            letter_c++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='D')
+            letter_d++;
+       for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='E')
+            letter_e++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='F')
+            letter_f++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='G')
+            letter_g++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='H')
+            letter_h++;
+       for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='I')
+            letter_i++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='J')
+            letter_j++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='K')
+            letter_k++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='L')
+            letter_l++;
+       for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='M')
+            letter_m++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='N')
+            letter_n++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='O')
+            letter_o++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='P')
+            letter_p++;
+       for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='Q')
+            letter_q++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='R')
+            letter_r++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='S')
+            letter_s++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='T')
+            letter_t++;
+       for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='U')
+            letter_u++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='V')
+            letter_v++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='W')
+            letter_w++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='X')
+            letter_x++;
+            for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='Y')
+            letter_y++;
+     for(int i = 0; i <= kol1.length(); i++)
+        if(isalpha(kol1[i]))
+           if(kol1[i]=='Z')
+            letter_z++;
+
+    cout<<"COLUMN I"<<endl;
+    cout<<"Letter a: "<<letter_a<<endl;
+    cout<<"Letter b: "<<letter_b<<endl;
+    cout<<"Letter c: "<<letter_c<<endl;
+    cout<<"Letter d: "<<letter_d<<endl;
+    cout<<"Letter e: "<<letter_e<<endl;
+    cout<<"Letter f: "<<letter_f<<endl;
+    cout<<"Letter g: "<<letter_g<<endl;
+    cout<<"Letter h: "<<letter_h<<endl;
+    cout<<"Letter i: "<<letter_i<<endl;
+    cout<<"Letter j: "<<letter_j<<endl;
+    cout<<"Letter k: "<<letter_k<<endl;
+    cout<<"Letter l: "<<letter_l<<endl;
+    cout<<"Letter m: "<<letter_m<<endl;
+    cout<<"Letter n: "<<letter_n<<endl;
+    cout<<"Letter o: "<<letter_o<<endl;
+    cout<<"Letter p: "<<letter_p<<endl;
+    cout<<"Letter q: "<<letter_q<<endl;
+    cout<<"Letter r: "<<letter_r<<endl;
+    cout<<"Letter s: "<<letter_s<<endl;
+    cout<<"Letter t: "<<letter_t<<endl;
+    cout<<"Letter u: "<<letter_u<<endl;
+    cout<<"Letter v: "<<letter_v<<endl;
+    cout<<"Letter w: "<<letter_w<<endl;
+    cout<<"Letter x: "<<letter_x<<endl;
+    cout<<"Letter y: "<<letter_y<<endl;
+    cout<<"Letter z: "<<letter_z<<endl<<endl;
+
+    //KOLUMNA II
+    double letter_a1 = 0, letter_b1 = 0, letter_c1 = 0, letter_d1 = 0, letter_e1 = 0, letter_f1 = 0, letter_g1 = 0, letter_h1 = 0, letter_i1 = 0, letter_j1 = 0, letter_k1 = 0, letter_l1 = 0, letter_m1 = 0,
+        letter_n1 = 0, letter_o1 = 0, letter_p1 = 0, letter_q1 = 0, letter_r1 = 0, letter_s1 = 0, letter_t1 = 0, letter_u1 = 0, letter_v1 = 0, letter_w1 = 0, letter_x1 = 0, letter_y1 = 0, letter_z1 = 0;
+
+    for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='A')
+            letter_a1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='B')
+            letter_b1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='C')
+            letter_c1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='D')
+            letter_d1++;
+       for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='E')
+            letter_e1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='F')
+            letter_f1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='G')
+            letter_g1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='H')
+            letter_h1++;
+       for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='I')
+            letter_i1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='J')
+            letter_j1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='K')
+            letter_k1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='L')
+            letter_l1++;
+       for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='M')
+            letter_m1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='N')
+            letter_n1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='O')
+            letter_o1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='P')
+            letter_p1++;
+       for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='Q')
+            letter_q1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='R')
+            letter_r1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='S')
+            letter_s1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='T')
+            letter_t1++;
+       for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='U')
+            letter_u1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='V')
+            letter_v1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='W')
+            letter_w1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='X')
+            letter_x1++;
+            for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='Y')
+            letter_y1++;
+     for(int i = 0; i <= kol2.length(); i++)
+        if(isalpha(kol2[i]))
+           if(kol2[i]=='Z')
+            letter_z1++;
+
+    cout<<"COLUMN II"<<endl;
+    cout<<"Letter a: "<<letter_a1<<endl;
+    cout<<"Letter b: "<<letter_b1<<endl;
+    cout<<"Letter c: "<<letter_c1<<endl;
+    cout<<"Letter d: "<<letter_d1<<endl;
+    cout<<"Letter e: "<<letter_e1<<endl;
+    cout<<"Letter f: "<<letter_f1<<endl;
+    cout<<"Letter g: "<<letter_g1<<endl;
+    cout<<"Letter h: "<<letter_h1<<endl;
+    cout<<"Letter i: "<<letter_i1<<endl;
+    cout<<"Letter j: "<<letter_j1<<endl;
+    cout<<"Letter k: "<<letter_k1<<endl;
+    cout<<"Letter l: "<<letter_l1<<endl;
+    cout<<"Letter m: "<<letter_m1<<endl;
+    cout<<"Letter n: "<<letter_n1<<endl;
+    cout<<"Letter o: "<<letter_o1<<endl;
+    cout<<"Letter p: "<<letter_p1<<endl;
+    cout<<"Letter q: "<<letter_q1<<endl;
+    cout<<"Letter r: "<<letter_r1<<endl;
+    cout<<"Letter s: "<<letter_s1<<endl;
+    cout<<"Letter t: "<<letter_t1<<endl;
+    cout<<"Letter u: "<<letter_u1<<endl;
+    cout<<"Letter v: "<<letter_v1<<endl;
+    cout<<"Letter w: "<<letter_w1<<endl;
+    cout<<"Letter x: "<<letter_x1<<endl;
+    cout<<"Letter y: "<<letter_y1<<endl;
+    cout<<"Letter z: "<<letter_z1<<endl<<endl;
+
+    //COLUMN III
+    double letter_a2 = 0, letter_b2 = 0, letter_c2 = 0, letter_d2 = 0, letter_e2 = 0, letter_f2 = 0, letter_g2 = 0, letter_h2 = 0, letter_i2 = 0, letter_j2 = 0, letter_k2 = 0, letter_l2 = 0, letter_m2 = 0,
+        letter_n2 = 0, letter_o2 = 0, letter_p2 = 0, letter_q2 = 0, letter_r2 = 0, letter_s2 = 0, letter_t2 = 0, letter_u2 = 0, letter_v2 = 0, letter_w2 = 0, letter_x2 = 0, letter_y2 = 0, letter_z2 = 0;
+
+    for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='A')
+            letter_a2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='B')
+            letter_b2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='C')
+            letter_c2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='D')
+            letter_d2++;
+       for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='E')
+            letter_e2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='F')
+            letter_f2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='G')
+            letter_g2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='H')
+            letter_h2++;
+       for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='I')
+            letter_i2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='J')
+            letter_j2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='K')
+            letter_k2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='L')
+            letter_l2++;
+       for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='M')
+            letter_m2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='N')
+            letter_n2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='O')
+            letter_o2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='P')
+            letter_p2++;
+       for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='Q')
+            letter_q2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='R')
+            letter_r2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='S')
+            letter_s2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='T')
+            letter_t2++;
+       for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='U')
+            letter_u2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='V')
+            letter_v2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='W')
+            letter_w2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='X')
+            letter_x2++;
+            for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='Y')
+            letter_y2++;
+     for(int i = 0; i <= kol3.length(); i++)
+        if(isalpha(kol3[i]))
+           if(kol3[i]=='Z')
+            letter_z2++;
+
+    cout<<"COLUMN III"<<endl;
+    cout<<"Letter a: "<<letter_a2<<endl;
+    cout<<"Letter b: "<<letter_b2<<endl;
+    cout<<"Letter c: "<<letter_c2<<endl;
+    cout<<"Letter d: "<<letter_d2<<endl;
+    cout<<"Letter e: "<<letter_e2<<endl;
+    cout<<"Letter f: "<<letter_f2<<endl;
+    cout<<"Letter g: "<<letter_g2<<endl;
+    cout<<"Letter h: "<<letter_h2<<endl;
+    cout<<"Letter i: "<<letter_i2<<endl;
+    cout<<"Letter j: "<<letter_j2<<endl;
+    cout<<"Letter k: "<<letter_k2<<endl;
+    cout<<"Letter l: "<<letter_l2<<endl;
+    cout<<"Letter m: "<<letter_m2<<endl;
+    cout<<"Letter n: "<<letter_n2<<endl;
+    cout<<"Letter o: "<<letter_o2<<endl;
+    cout<<"Letter p: "<<letter_p2<<endl;
+    cout<<"Letter q: "<<letter_q2<<endl;
+    cout<<"Letter r: "<<letter_r2<<endl;
+    cout<<"Letter s: "<<letter_s2<<endl;
+    cout<<"Letter t: "<<letter_t2<<endl;
+    cout<<"Letter u: "<<letter_u2<<endl;
+    cout<<"Letter v: "<<letter_v2<<endl;
+    cout<<"Letter w: "<<letter_w2<<endl;
+    cout<<"Letter x: "<<letter_x2<<endl;
+    cout<<"Letter y: "<<letter_y2<<endl;
+    cout<<"Letter z: "<<letter_z2<<endl<<endl;
+
+    //Liczenie koincydencji kolumn
+    // I
+    cout<<kol1.length()<<endl;
+    double kol1_len = kol1.length();
+    cout<<kol1_len<<endl;
+    cout<<letter_b<<endl;
+
+    double coinc1 = (letter_a * (letter_a-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_b * (letter_b-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_c * (letter_c-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_d * (letter_d-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_e * (letter_e-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_f * (letter_f-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_g * (letter_g-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_h * (letter_h-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_i * (letter_i-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_j * (letter_j-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_k * (letter_k-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_l * (letter_l-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_m * (letter_m-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_n * (letter_n-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_o * (letter_o-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_p * (letter_p-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_q * (letter_q-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_r * (letter_r-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_s * (letter_s-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_t * (letter_t-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_u * (letter_u-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_v * (letter_v-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_w * (letter_w-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_x * (letter_x-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_y * (letter_y-1))/(kol1_len * (kol1_len - 1))+
+                    (letter_z * (letter_z-1))/(kol1_len * (kol1_len - 1));
+
+
+    cout<< "Coincidention column 1 is: "<< coinc1<<endl;
+
+
+    double kol2_len = kol2.length();
+    cout<<kol2_len<<endl;
+    double coinc2 = (letter_a1 * (letter_a1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_b1 * (letter_b1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_c1 * (letter_c1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_d1 * (letter_d1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_e1 * (letter_e1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_f1 * (letter_f1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_g1 * (letter_g1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_h1 * (letter_h1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_i1 * (letter_i1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_j1 * (letter_j1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_k1 * (letter_k1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_l1 * (letter_l1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_m1 * (letter_m1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_n1 * (letter_n1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_o1 * (letter_o1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_p1 * (letter_p1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_q1 * (letter_q1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_r1 * (letter_r1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_s1 * (letter_s1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_t1 * (letter_t1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_u1 * (letter_u1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_v1 * (letter_v1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_w1 * (letter_w1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_x1 * (letter_x1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_y1 * (letter_y1-1))/(kol2_len * (kol2_len - 1))+
+                    (letter_z1 * (letter_z1-1))/(kol2_len * (kol2_len - 1)); //trochę zbyt zawiły kod wystaczyłaby suma iloczynu a potem przez jeden mianownik.. ale daje ten sam wynik
+
+
+    cout<< "Coincidention column 2 is: "<< coinc2<<endl;
+
+    double kol3_len = kol3.length();
+    cout<<kol3_len<<endl;
+    double coinc3 = (letter_a2 * (letter_a2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_b2 * (letter_b2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_c2 * (letter_c2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_d2 * (letter_d2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_e2 * (letter_e2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_f2 * (letter_f2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_g2 * (letter_g2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_h2 * (letter_h2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_i2 * (letter_i2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_j2 * (letter_j2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_k2 * (letter_k2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_l2 * (letter_l2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_m2 * (letter_m2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_n2 * (letter_n2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_o2 * (letter_o2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_p2 * (letter_p2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_q2 * (letter_q2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_r2 * (letter_r2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_s2 * (letter_s2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_t2 * (letter_t2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_u2 * (letter_u2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_v2 * (letter_v2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_w2 * (letter_w2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_x2 * (letter_x2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_y2 * (letter_y2-1))/(kol3_len * (kol3_len - 1))+
+                    (letter_z2 * (letter_z2-1))/(kol3_len * (kol3_len - 1));
+
+
+    cout<< "Coincidention column 3 is: "<< coinc3<<endl;
+
+    //Wzajemny index zgodności między wszystkimi kolumnami...
+    //tutaj nie wiem czy mogę zrobić na raz między kolumnami 1,2,3
+    //czy muszę wyliczyć między 1,2 potem 1,3 potem 2,3, więc zrobię to tymi dwoma sposobami
+
+    double coinc_1_A =  (letter_a *letter_a1 * letter_a2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_b *letter_b1 * letter_b2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_c *letter_c1 * letter_c2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_d *letter_d1 * letter_d2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_e *letter_e1 * letter_e2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_f *letter_f1 * letter_f2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_g *letter_g1 * letter_g2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_h *letter_h1 * letter_h2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_i *letter_i1 * letter_i2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_j *letter_j1 * letter_j2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_k *letter_k1 * letter_k2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_l *letter_l1 * letter_l2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_m *letter_m1 * letter_m2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_n *letter_n1 * letter_n2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_o *letter_o1 * letter_o2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_p *letter_p1 * letter_p2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_q *letter_q1 * letter_q2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_r *letter_r1 * letter_r2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_s *letter_s1 * letter_s2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_t *letter_t1 * letter_t2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_u *letter_u1 * letter_u2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_v *letter_v1 * letter_v2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_w *letter_w1 * letter_w2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_x *letter_x1 * letter_x2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_y *letter_y1 * letter_y2)/(kol1_len *kol2_len * kol3_len)+
+                        (letter_z *letter_z1 * letter_z2)/(kol1_len *kol2_len * kol3_len);
+
+    cout<< "Coincidention all columns is: "<< coinc_1_A<<endl; // to raczej nie ten wynik więc należy zrobić dla kolumny 1,2 potem 1,3 potem 2,3
+
+    //KOLUMNY 1,2
+    double coinc_1_2 = (letter_a *letter_a1+
+                        letter_b *letter_b1+
+                        letter_c *letter_c1+
+                        letter_d *letter_d1+
+                        letter_e *letter_e1+
+                        letter_f *letter_f1+
+                        letter_g *letter_g1+
+                        letter_h *letter_h1+
+                        letter_i *letter_i1+
+                        letter_j *letter_j1+
+                        letter_k *letter_k1+
+                        letter_l *letter_l1+
+                        letter_m *letter_m1+
+                        letter_n *letter_n1+
+                        letter_o *letter_o1+
+                        letter_p *letter_p1+
+                        letter_q *letter_q1+
+                        letter_r *letter_r1+
+                        letter_s *letter_s1+
+                        letter_t *letter_t1+
+                        letter_u *letter_u1+
+                        letter_v *letter_v1+
+                        letter_w *letter_w1+
+                        letter_x *letter_x1+
+                        letter_y *letter_y1+
+                        letter_z *letter_z1)/(kol1_len *kol2_len);
+
+    cout<< "Coincidention column 1 and 2 is: "<< coinc_1_2<<endl;
+
+     //KOLUMNY 1,3
+    double coinc_1_3 = (letter_a *letter_a2+
+                        letter_b *letter_b2+
+                        letter_c *letter_c2+
+                        letter_d *letter_d2+
+                        letter_e *letter_e2+
+                        letter_f *letter_f2+
+                        letter_g *letter_g2+
+                        letter_h *letter_h2+
+                        letter_i *letter_i2+
+                        letter_j *letter_j2+
+                        letter_k *letter_k2+
+                        letter_l *letter_l2+
+                        letter_m *letter_m2+
+                        letter_n *letter_n2+
+                        letter_o *letter_o2+
+                        letter_p *letter_p2+
+                        letter_q *letter_q2+
+                        letter_r *letter_r2+
+                        letter_s *letter_s2+
+                        letter_t *letter_t2+
+                        letter_u *letter_u2+
+                        letter_v *letter_v2+
+                        letter_w *letter_w2+
+                        letter_x *letter_x2+
+                        letter_y *letter_y2+
+                        letter_z *letter_z2)/(kol1_len*kol3_len);
+
+    cout<< "Coincidention column 1 and 3 is: "<< coinc_1_3<<endl;
+
+    //KOLUMNY 2,3
+    double coinc_2_3 = (letter_a1 *letter_a2+
+                        letter_b1 *letter_b2+
+                        letter_c1 *letter_c2+
+                        letter_d1 *letter_d2+
+                        letter_e1 *letter_e2+
+                        letter_f1 *letter_f2+
+                        letter_g1 *letter_g2+
+                        letter_h1 *letter_h2+
+                        letter_i1 *letter_i2+
+                        letter_j1 *letter_j2+
+                        letter_k1 *letter_k2+
+                        letter_l1 *letter_l2+
+                        letter_m1 *letter_m2+
+                        letter_n1 *letter_n2+
+                        letter_o1 *letter_o2+
+                        letter_p1 *letter_p2+
+                        letter_q1 *letter_q2+
+                        letter_r1 *letter_r2+
+                        letter_s1 *letter_s2+
+                        letter_t1 *letter_t2+
+                        letter_u1 *letter_u2+
+                        letter_v1 *letter_v2+
+                        letter_w1 *letter_w2+
+                        letter_x1 *letter_x2+
+                        letter_y1 *letter_y2+
+                        letter_z1 *letter_z2)/(kol2_len*kol3_len);
+
+    cout<< "Coincidention column 2 and 3 is: "<< coinc_2_3<<endl;
+
+
+     return 0;
+}
