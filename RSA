@@ -1,0 +1,134 @@
+#include <iostream>
+#include <algorithm>
+#include <list>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+vector<int> NWD(int e, int m);
+
+
+int main()
+{
+    int p,q,p1,q1,e,m;
+    cout<<"Wpisz p: "<<endl;
+    cin>>p;
+    cout<<"Wpisz q: "<<endl;
+    cin>>q;
+
+    int p_gen = p * 20;
+	vector<int> temp_p;
+	for (int i = 0; i < p_gen - 1; i++)
+	{
+		temp_p.push_back(i + 2);
+	}
+	for (int i = 0; i <= sqrt(temp_p[temp_p.size()]); i++)
+		for (int j = 0; j < temp_p.size(); ++j)
+			if (temp_p[j] % temp_p[i] == 0 and temp_p[i] != temp_p[j])
+				temp_p.erase(temp_p.begin() + j);
+
+	cout <<"P liczba pierwsza jest: "<< temp_p[p - 1]<<endl;
+//generacja q liczby pierwszej
+    int q_gen = q * 20;
+	vector<int> temp_q;
+	for (int i = 0; i < q_gen - 1; i++)
+	{
+		temp_q.push_back(i + 2);
+	}
+	for (int i = 0; i <= sqrt(temp_q[temp_q.size()]); i++)
+		for (int j = 0; j < temp_q.size(); ++j)
+			if (temp_q[j] % temp_q[i] == 0 and temp_q[i] != temp_q[j])
+				temp_q.erase(temp_q.begin() + j);
+
+	cout <<"Q liczba pierwsza jest: "<< temp_q[q - 1]<<endl;
+
+    p1=temp_p[p - 1];
+    q1=temp_q[q - 1];
+
+    int n1=  p1*q1;
+    int m1= (p1-1)*(q1-1);
+    cout<<"N = "<<n1<<endl;
+    cout<<"M = "<<m1<<endl;
+
+        cout << "Wpisze swoje e: "<<endl;
+        cin>>e;
+        vector<int> nwd_res = NWD(e,m1);
+       while (nwd_res[0]!= 1)
+        cin>>e;
+
+        int y = nwd_res[2];
+        cout << "Twoje m: " <<m1<< endl;
+
+
+    cout<<"e= "<<e<<endl<<"m= "<<m1<<endl;
+
+    if(y<0)
+    {
+        y=m1+y;
+    }
+    cout<<"Klucz publiczny("<<n1<<","<<e<<")";
+    cout<<"Klucz prywanty ("<<n1<<","<<y<<")";
+
+}
+
+vector <int> NWD(int e, int m)
+{
+    vector<int>abc;
+	int r, nwd, a, q, b;
+	int x, x1, x2;
+	int y, y1, y2;
+
+	if (m > e)
+	{
+		nwd = m;
+		m = e;
+		e = nwd;
+	}
+
+	a = e;
+	b = m;
+
+	q = a / b;
+	r = a - q * b;
+	nwd = b;
+
+	x2 = 1;
+	x1 = 0;
+	y2 = 0;
+	y1 = 1;
+	x = 1;
+	y = y2 - (q - 1)*y1;
+
+	while (r != 0)
+	{
+		a = b;
+		b = r;
+
+		x = x2 - q * x1;
+		x2 = x1;
+		x1 = x;
+
+		y = y2 - q * y1;
+		y2 = y1;
+		y1 = y;
+
+		nwd = r;
+		q = a / b;
+		r = a - q * b;
+	}
+
+
+	cout << "NWD = " << nwd << endl << "x= " << x << endl << "y= " << y << endl;
+
+	if (nwd == 1)
+	{
+		cout << m << "*" << y << "mod" << e << "= 1" << endl;
+	}
+	abc.push_back(nwd);
+	abc.push_back(x);
+	abc.push_back(y);
+    return abc;  // myli x z y ale to nie ma wpływu na wynik
+}
